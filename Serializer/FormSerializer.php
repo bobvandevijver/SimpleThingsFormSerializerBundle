@@ -142,15 +142,15 @@ class FormSerializer implements FormSerializerInterface
 
         foreach ($form->all() as $child) {
             $options = $child->getConfig()->getOptions();
-            $name    = $options['serialize_name'] ?: $namingStrategy->translateName($child);
+            $name    = (array_key_exists('serialize_name', $options) && is_string($options['serialize_name'])) ?$options['serialize_name']: $namingStrategy->translateName($child);
 
             if ($isXml) {
-                $name = (!$options['serialize_xml_value'])
+                $name = (array_key_exists('serialize_xml_value', $options) && !$options['serialize_xml_value'])
                     ? ($options['serialize_xml_attribute'] ? '@' . $name : $name)
                     : '#';
             }
 
-            if ( ! $options['serialize_xml_inline'] && $isXml) {
+            if ((array_key_exists('serialize_xml_inline', $options) && !$options['serialize_xml_inline']) && $isXml) {
                 $data[$name][$options['serialize_xml_name']] = $this->serializeForm($child, $isXml);
             } else {
                 $data[$name] = $this->serializeForm($child, $isXml);
